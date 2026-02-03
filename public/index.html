@@ -10,11 +10,10 @@
         @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;700;900&display=swap");
 
         :root {
-            --bg-black: #050505;
+            --bg-black: #000000;
             --text-white: #ffffff;
             --gray-dim: #222222;
             --gray-med: #666666;
-            --glow: rgba(255, 255, 255, 0.1);
         }
 
         * { box-sizing: border-box; }
@@ -36,24 +35,24 @@
             inset: 0;
             background: black;
             z-index: 999998;
-            animation: curtainFade 4.5s ease-in-out forwards;
+            animation: curtainFade 4.5s ease-in-out both;
             pointer-events: none;
         }
 
         @keyframes curtainFade {
-            0% { opacity: 1; }
+            0% { opacity: 1; visibility: visible; }
             85% { opacity: 1; }
             100% { opacity: 0; visibility: hidden; }
         }
 
-        /* --- BACKGROUND CANVAS --- */
+        /* --- CONSTELLATION CANVAS --- */
         #constellation-canvas {
             position: fixed;
             inset: 0;
             width: 100%;
             height: 100%;
             z-index: 1;
-            opacity: 0.4;
+            opacity: 0.5;
         }
 
         /* --- INTRO TEXT --- */
@@ -79,46 +78,7 @@
             100% { opacity: 0; transform: translate(-50%, -50%) scale(1.05); visibility: hidden; }
         }
 
-        /* --- TOP NAVIGATION --- */
-        .hover-trigger {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            height: 15px;
-            z-index: 10001;
-        }
-
-        .top-nav {
-            position: fixed;
-            top: -80px;
-            left: 0;
-            width: 100%;
-            height: 70px;
-            background: rgba(5, 5, 5, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: top 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 10000;
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .top-nav:hover, .hover-trigger:hover + .top-nav { top: 0; }
-
-        .top-nav input {
-            width: 500px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 30px;
-            color: white;
-            padding: 12px 25px;
-            outline: none;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-
-        /* --- MAIN INTERFACE --- */
+        /* --- MAIN UI --- */
         .centered-wrapper {
             position: relative;
             display: flex;
@@ -151,12 +111,10 @@
             height: 60px;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
             color: white;
             padding: 0 30px;
             font-size: 1.1rem;
             outline: none;
-            transition: 0.4s;
             text-align: center;
             font-weight: 300;
         }
@@ -178,18 +136,17 @@
         footer a { color: white; text-decoration: none; margin-left: 15px; opacity: 0.5; }
         footer a:hover { opacity: 1; }
     </style>
+
+    <script src="/scram/scramjet.all.js" defer></script>
+    <script src="/baremux/index.js" defer></script>
+    <script src="register-sw.js" defer></script>
+    <script src="search.js" defer></script>
+    <script src="index.js" defer></script>
 </head>
 <body>
 
     <div class="splash-overlay"></div>
     <canvas id="constellation-canvas"></canvas>
-    <div class="hover-trigger"></div>
-    
-    <nav class="top-nav">
-        <form id="top-form">
-            <input id="top-address" type="text" placeholder="Quick Search" autocomplete="off">
-        </form>
-    </nav>
 
     <main class="centered-wrapper" id="main-ui">
         <div class="logo-wrapper">
@@ -201,8 +158,13 @@
             <input id="sj-address" type="text" placeholder="Explore the horizon" autofocus autocomplete="off" />
         </form>
 
+        <div class="desc">
+            <p id="sj-error"></p>
+            <pre id="sj-error-code"></pre>
+        </div>
+
         <footer>
-            Asphalt Horizon &copy; 2026 
+            Horizon Network &copy; 2026 
             <a href="https://securly.pages.dev">Games</a>
         </footer>
     </main>
@@ -230,19 +192,14 @@
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#fff';
-            
             for (let i = 0; i < points.length; i++) {
                 let p = points[i];
-                p.x += p.vx;
-                p.y += p.vy;
-
+                p.x += p.vx; p.y += p.vy;
                 if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
                 if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, 1, 0, Math.PI * 2);
                 ctx.fill();
-
                 for (let j = i + 1; j < points.length; j++) {
                     let p2 = points[j];
                     let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
@@ -258,16 +215,10 @@
             }
             requestAnimationFrame(draw);
         }
-
         window.addEventListener('resize', init);
         init();
         draw();
     </script>
 
-    <script src="/scram/scramjet.all.js" defer></script>
-    <script src="/baremux/index.js" defer></script>
-    <script src="register-sw.js" defer></script>
-    <script src="search.js" defer></script>
-    <script src="index.js" defer></script>
 </body>
 </html>
