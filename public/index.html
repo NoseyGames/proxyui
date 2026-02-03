@@ -20,7 +20,7 @@
         * { box-sizing: border-box; }
         html, body { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; background-color: var(--bg-black); font-family: "Inter", sans-serif; color: var(--text-white); }
 
-        /* --- NAV BAR --- */
+        /* --- NAVIGATION BAR --- */
         #nav-container {
             position: fixed;
             top: 0; left: 0; right: 0;
@@ -33,7 +33,16 @@
         }
 
         .nav-controls { height: 50px; display: flex; align-items: center; padding: 0 15px; gap: 8px; }
-        .tab-bar { height: 35px; display: flex; align-items: center; padding: 0 10px; gap: 5px; background: rgba(0,0,0,0.4); overflow-x: auto; border-top: 1px solid rgba(255,255,255,0.05); }
+        .tab-bar { 
+            height: 35px; 
+            display: flex; 
+            align-items: center; 
+            padding: 0 10px; 
+            gap: 5px; 
+            background: rgba(0,0,0,0.4); 
+            overflow-x: auto; 
+            border-top: 1px solid rgba(255,255,255,0.05); 
+        }
 
         .nav-btn { background: transparent; border: none; color: white; padding: 8px; cursor: pointer; display: flex; align-items: center; border-radius: 6px; transition: 0.2s; }
         .nav-btn:hover { background: rgba(255,255,255,0.1); }
@@ -41,10 +50,24 @@
 
         #nav-url { flex-grow: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 8px 15px; font-size: 0.85rem; border-radius: 6px; outline: none; }
 
-        .tab { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--gray-med); padding: 4px 12px; font-size: 0.75rem; cursor: pointer; border-radius: 4px; display: flex; align-items: center; gap: 8px; }
+        .tab { 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid var(--border); 
+            color: var(--gray-med); 
+            padding: 4px 12px; 
+            font-size: 0.75rem; 
+            cursor: pointer; 
+            border-radius: 4px; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            white-space: nowrap;
+        }
         .tab.active { background: rgba(255,255,255,0.15); color: white; border-color: white; }
+        .tab-close { opacity: 0.5; font-size: 16px; margin-left: 5px; }
+        .tab-close:hover { color: #ff4d4d; }
 
-        /* --- FRAMES --- */
+        /* --- PROXY FRAMES --- */
         .proxy-frame {
             position: fixed;
             top: 85px; 
@@ -53,12 +76,12 @@
             height: calc(100vh - 85px);
             border: none;
             background: #000;
-            display: none; /* Controlled by .active class */
+            display: none;
             z-index: 100;
         }
         .proxy-frame.active { display: block !important; }
 
-        /* --- UI --- */
+        /* --- MAIN UI --- */
         .centered-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; z-index: 10; padding-top: 85px; }
         .logo-wrapper h1 { font-size: 4rem; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; margin-bottom: 20px; }
         .logo-wrapper h1 span { font-weight: 100; color: var(--gray-med); margin-left: 10px; letter-spacing: 5px; }
@@ -77,12 +100,24 @@
 
     <div id="nav-container">
         <div class="nav-controls">
-            <button class="nav-btn" onclick="controlFrame('back')"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
-            <button class="nav-btn" onclick="controlFrame('forward')"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
-            <button class="nav-btn" onclick="controlFrame('reload')"><svg viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button>
-            <input type="text" id="nav-url" placeholder="Search or type URL" autocomplete="off">
-            <button class="nav-btn" onclick="addTab()"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
-            <button class="nav-btn" onclick="location.reload()"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></button>
+            <button class="nav-btn" onclick="controlFrame('back')">
+                <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button class="nav-btn" onclick="controlFrame('forward')">
+                <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+            <button class="nav-btn" onclick="controlFrame('reload')">
+                <svg viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+            </button>
+            
+            <input type="text" id="nav-url" placeholder="Search or enter URL" autocomplete="off">
+            
+            <button class="nav-btn" onclick="addTab()">
+                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+            <button class="nav-btn" onclick="location.reload()">
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </button>
         </div>
         <div class="tab-bar" id="tab-bar"></div>
     </div>
@@ -90,7 +125,8 @@
     <main class="centered-wrapper" id="main-ui">
         <div class="logo-wrapper"><h1>Asphalt<span>Horizon</span></h1></div>
         <form id="sj-form" style="width:100%; max-width:500px;">
-            <input id="sj-address" type="text" placeholder="Start your journey" style="width:100%; height:55px; background:rgba(255,255,255,0.03); border:1px solid var(--border); color:white; padding:0 20px; text-align:center; outline:none; border-radius:8px;" autofocus autocomplete="off" />
+            <input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
+            <input id="sj-address" type="text" placeholder="Explore the horizon" style="width:100%; height:55px; background:rgba(255,255,255,0.03); border:1px solid var(--border); color:white; padding:0 20px; text-align:center; outline:none; border-radius:8px;" autofocus autocomplete="off" />
         </form>
     </main>
 
@@ -98,32 +134,47 @@
         let tabs = [];
         let activeTabId = null;
         let scramjet;
+        let connection;
 
         window.addEventListener('load', () => {
+            // Initialize Scramjet
             const { ScramjetController } = $scramjetLoadController();
-            scramjet = new ScramjetController({ files: { wasm: "/scram/scramjet.wasm.wasm", all: "/scram/scramjet.all.js", sync: "/scram/scramjet.sync.js" } });
+            scramjet = new ScramjetController({
+                files: { wasm: "/scram/scramjet.wasm.wasm", all: "/scram/scramjet.all.js", sync: "/scram/scramjet.sync.js" }
+            });
             scramjet.init();
+
+            // Initialize Bare-Mux with FALSE to fix MessagePort error
+            connection = new BareMux.BareMuxConnection("/baremux/worker.js", false);
 
             document.getElementById("sj-form").addEventListener("submit", (e) => {
                 e.preventDefault();
-                createNewProxyTab(document.getElementById("sj-address").value);
+                launchProxy(document.getElementById("sj-address").value);
             });
 
             document.getElementById("nav-url").addEventListener("keydown", (e) => {
-                if(e.key === "Enter") createNewProxyTab(e.target.value);
+                if(e.key === "Enter") launchProxy(e.target.value);
             });
         });
 
-        async function createNewProxyTab(input) {
+        async function launchProxy(input) {
             if (!input) return;
             try { await registerSW(); } catch(e) {}
             
-            const id = 'tab-' + Date.now();
-            const url = search(input, "https://www.google.com/search?q=%s");
+            // Format URL using search.js logic
+            const url = search(input, document.getElementById("sj-search-engine").value);
             
+            // Setup Wisp Transport
+            try {
+                let wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
+                await connection.setTransport("/libcurl/index.mjs", [{ websocket: wispUrl }]);
+            } catch(e) { console.error("Transport Setup Failed", e); }
+
+            const id = 'tab-' + Date.now();
             const newFrame = scramjet.createFrame();
-            newFrame.frame.classList.add('proxy-frame');
+            
             newFrame.frame.id = 'frame-' + id;
+            newFrame.frame.classList.add('proxy-frame');
             document.body.appendChild(newFrame.frame);
 
             tabs.push({ id, url, frame: newFrame });
@@ -136,12 +187,10 @@
         function switchTab(id) {
             activeTabId = id;
             document.querySelectorAll('.proxy-frame').forEach(f => f.classList.remove('active'));
-            
-            const frameEl = document.getElementById('frame-' + id);
-            if (frameEl) {
-                frameEl.classList.add('active');
-                const t = tabs.find(tab => tab.id === id);
-                document.getElementById("nav-url").value = t.url;
+            const activeTab = tabs.find(t => t.id === id);
+            if (activeTab) {
+                document.getElementById('frame-' + id).classList.add('active');
+                document.getElementById("nav-url").value = activeTab.url;
             }
             renderTabs();
         }
@@ -152,43 +201,43 @@
             tabs.forEach(t => {
                 const div = document.createElement("div");
                 div.className = `tab ${t.id === activeTabId ? 'active' : ''}`;
-                div.innerHTML = `<span>Page</span> <span onclick="closeTab(event, '${t.id}')" style="cursor:pointer;margin-left:5px">×</span>`;
+                div.innerHTML = `<span>Page</span> <span class="tab-close" onclick="closeTab(event, '${t.id}')">×</span>`;
                 div.onclick = () => switchTab(t.id);
                 bar.appendChild(div);
             });
         }
 
-        function closeTab(e, id) {
+        window.closeTab = function(e, id) {
             e.stopPropagation();
             tabs = tabs.filter(t => t.id !== id);
             document.getElementById('frame-' + id).remove();
-            if(tabs.length === 0) {
+            if (tabs.length === 0) {
                 document.getElementById("main-ui").style.display = "flex";
                 activeTabId = null;
-            } else {
+            } else if (activeTabId === id) {
                 switchTab(tabs[tabs.length - 1].id);
             }
             renderTabs();
-        }
+        };
 
-        function controlFrame(action) {
+        window.controlFrame = function(action) {
             const current = tabs.find(t => t.id === activeTabId);
-            if(!current) return;
-            if(action === 'back') current.frame.goBack();
-            if(action === 'forward') current.frame.goForward();
-            if(action === 'reload') current.frame.reload();
-        }
+            if (!current) return;
+            if (action === 'back') current.frame.goBack();
+            if (action === 'forward') current.frame.goForward();
+            if (action === 'reload') current.frame.reload();
+        };
 
-        function addTab() {
+        window.addTab = function() {
             document.getElementById("main-ui").style.display = "flex";
             document.getElementById("sj-address").focus();
-        }
+        };
 
         // Constellation background
         const canvas = document.getElementById('constellation-canvas');
         const ctx = canvas.getContext('2d');
         let pts = [];
-        function initC() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; pts = []; for(let i=0; i<40; i++) pts.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, vx:(Math.random()-0.5)*0.15, vy:(Math.random()-0.5)*0.15}); }
+        function initC() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; pts = []; for(let i=0; i<45; i++) pts.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, vx:(Math.random()-0.5)*0.15, vy:(Math.random()-0.5)*0.15}); }
         function drawC() { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle="#fff"; pts.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; if(p.x<0||p.x>canvas.width) p.vx*=-1; if(p.y<0||p.y>canvas.height) p.vy*=-1; ctx.beginPath(); ctx.arc(p.x,p.y,1,0,Math.PI*2); ctx.fill(); }); requestAnimationFrame(drawC); }
         window.addEventListener('resize', initC); initC(); drawC();
     </script>
