@@ -1,77 +1,248 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+     <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' securlycdn.surge.sh securly.pages.dev ixlfun.pages.dev homeworkbtw.pages.dev nikehub.pages.dev mathfunn.vercel.app canvus.vercel.app;">
+    
+    <script>
+        (function() {
+            // Only run if we are inside a frame
+            if (window.top !== window.self) {
+                const allowedAncestors = [
+                    'securlycdn.surge.sh', 
+                    'securly.pages.dev', 
+                    'ixlfun.pages.dev', 
+                    'homeworkbtw.pages.dev', 
+                    'nikehub.pages.dev', 
+                    'mathfunn.vercel.app', 
+                    'canvus.vercel.app'
+                ];
+                
+                // Get the domain of the site trying to host the iframe
+                const parentDomain = new URL(document.referrer).hostname;
+                
+                // If the parent domain isn't in our list (and isn't our own domain), block it
+                if (!allowedAncestors.includes(parentDomain) && parentDomain !== window.location.hostname) {
+                    window.top.location.href = window.location.href; // Force break out of frame
+                    document.documentElement.innerHTML = "This site owner just tried to steal my credits. https://securly.pages.dev for an actual site."; // Blank the page
+                }
+            }
+        })();
+    </script>
+
+    <meta charset="utf-8" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
     <title>Algebra Lesson 3</title>
+    <link rel="shortcut icon" href="favicon.png" />
+    
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;900&display=swap");
-        :root { --accent: #ffffff; --bg: #050505; }
+
+        :root {
+            --accent-green: #00ff41;
+        }
+
         * { box-sizing: border-box; }
-        html, body { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; background: var(--bg); font-family: "Roboto", sans-serif; color: white; }
 
-        .space-bg { position: fixed; inset: 0; z-index: 1; background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%); }
-        .space-bg::before { content: ""; position: absolute; width: 1px; height: 1px; background: transparent; box-shadow: 15vw 10vh #fff, 35vw 25vh #fff, 55vw 15vh #fff, 85vw 40vh #fff, 20vw 80vh #fff, 50vw 90vh #fff; animation: twinkle 4s infinite alternate; }
-        @keyframes twinkle { 0% { opacity: 0.2; } 100% { opacity: 0.8; } }
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: #0a0a0a;
+            font-family: "Roboto", sans-serif;
+            color: white;
+        }
 
-        .centered-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; z-index: 10; animation: fadeIn 1s forwards 3.5s; opacity: 0; }
-        @keyframes fadeIn { to { opacity: 1; } }
-        .logo-wrapper h1 { font-size: 3.5rem; font-weight: 900; letter-spacing: 12px; text-transform: uppercase; margin-bottom: 30px; }
-        
-        #sj-form { width: 100%; max-width: 600px; padding: 0 20px; }
-        #sj-address { width: 100%; height: 60px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 2px; color: #fff; padding: 0 30px; font-size: 1.1rem; outline: none; text-align: center; }
+        /* --- GRID BACKGROUND --- */
+        .grid-bg {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 1;
+        }
 
-        #sj-frame { position: fixed; inset: 0; width: 100vw; height: 100vh; border: none; z-index: 9999; background: black; display: none; }
-        .top-nav { position: fixed; top: -70px; left: 0; width: 100%; height: 60px; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 10000; transition: 0.3s; border-bottom: 1px solid white; }
-        .hover-trigger { position: fixed; top: 0; width: 100%; height: 10px; z-index: 10001; }
-        .hover-trigger:hover + .top-nav, .top-nav:hover { top: 0; }
-        .top-nav input { width: 400px; height: 35px; background: #111; border: 1px solid #333; color: white; border-radius: 20px; padding: 0 15px; outline: none; }
+        /* --- TOP NAV BAR (Hidden until hover) --- */
+        .hover-trigger {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            z-index: 10001;
+        }
 
-        .splash-overlay { position: fixed; inset: 0; background: #000; z-index: 999999; display: flex; justify-content: center; align-items: center; animation: fadeOut 1s forwards 3.5s; }
-        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+        .top-nav {
+            position: fixed;
+            top: -70px;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: rgba(10, 10, 10, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10000;
+            border-bottom: 1px solid var(--accent-green);
+            backdrop-filter: blur(10px);
+        }
+
+        .top-nav:hover, .hover-trigger:hover + .top-nav {
+            top: 0;
+        }
+
+        .top-nav input {
+            width: 500px;
+            height: 35px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: white;
+            padding: 0 15px;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        .top-nav input:focus { border-color: var(--accent-green); }
+
+        /* --- MAIN UI --- */
+.centered-wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Changed from center to flex-start to allow manual positioning */
+    justify-content: flex-start; 
+    height: 100vh;
+    z-index: 10;
+    /* This adds the initial padding from the top of the screen */
+    padding-top: 15vh; 
+}
+
+.logo-wrapper h1 {
+    font-size: 3rem;
+    /* Increase this value to push the search bar further down */
+    margin-bottom: 350px; 
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-shadow: 0 0 15px rgba(255,255,255,0.2);
+}
+
+#sj-form {
+    width: 100%;
+    max-width: 550px;
+    padding: 0 20px;
+    /* Optional: adds extra weight to the downward push */
+    margin-top: 20px; 
+}
+
+        #sj-address {
+            width: 100%;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            color: #fff;
+            padding: 0 25px;
+            font-size: 1.2rem;
+            outline: none;
+            transition: 0.4s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        #sj-address:focus {
+            border-color: var(--accent-green);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.15);
+        }
+
+        /* --- DYNAMIC FRAME STYLE --- */
+        #sj-frame {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            border: none;
+            z-index: 9999;
+            background: black;
+            display: none;
+        }
+
         .ui-hidden { display: none !important; }
+
+        /* --- SPLASH ANIMATION --- */
+        body::before {
+            content: "Welcome to NikeNetwork";
+            position: fixed;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.3);
+            z-index: 999999999;
+            pointer-events: none;
+            animation: splashFade 4s forwards;
+        }
+
+        @keyframes splashFade {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        footer {
+            position: absolute;
+            bottom: 20px;
+            color: rgba(255,255,255,0.2);
+            font-size: 13px;
+            z-index: 10;
+        }
     </style>
 
-    <script src="/scram/scramjet.all.js"></script>
-    <script src="/baremux/index.js"></script>
-    
+    <script src="/scram/scramjet.all.js" defer></script>
+    <script src="/baremux/index.js" defer></script>
     <script src="register-sw.js" defer></script>
     <script src="search.js" defer></script>
     <script src="index.js" defer></script>
 </head>
 <body>
-    <div class="splash-overlay">
-        <h1 style="letter-spacing: 12px; font-weight: 300;">ASPHALT <span style="font-weight: 900;">HORIZON</span></h1>
-    </div>
 
-    <div class="space-bg"></div>
+    <div class="grid-bg"></div>
     <div class="hover-trigger"></div>
     
     <nav class="top-nav">
         <form id="top-form">
-            <input id="top-address" type="text" placeholder="Search..." autocomplete="off">
+            <input id="top-address" type="text" placeholder="Quick Search / Enter URL..." autocomplete="off">
         </form>
     </nav>
 
-    <iframe id="sj-frame"></iframe>
-
     <main class="centered-wrapper" id="main-ui">
         <div class="logo-wrapper">
-            <h1>Asphalt</h1>
+            <h1></h1>
         </div>
+
         <form id="sj-form">
             <input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
             <input id="sj-address" type="text" placeholder="Search the web freely..." autofocus autocomplete="off" />
         </form>
 
-        <div class="desc" style="display:none;">
+        <div class="desc">
             <p id="sj-error"></p>
             <pre id="sj-error-code"></pre>
         </div>
 
-        <footer style="position: absolute; bottom: 20px; color: rgba(255,255,255,0.2); font-size: 10px; letter-spacing: 2px;">
-            NIKEGTAG // &copy; 2026
+        <footer>
+            Scramjet & NikeGtag &copy; 2026 | <a href="credits.html" style="color: inherit; text-decoration: none;">Credits</a>
         </footer>
     </main>
+
 </body>
 </html>
