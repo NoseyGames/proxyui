@@ -1,66 +1,264 @@
-<!doctype html>
-<html>
-	<head>
-		<meta charset="utf-8" />
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
-		/>
-		<title>Scramjet</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    <title>Algebra Lesson 3</title>
+    <link rel="shortcut icon" href="favicon.png" />
+    
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;900&display=swap");
 
-		<link rel="shortcut icon" content="favicon.webp" />
-	
-		<script src="/scram/scramjet.all.js"></script>
-		<script src="/baremux/index.js"></script>
-		
-		<link rel="stylesheet" href="index.css" />
-		<script src="register-sw.js" defer></script>
-		<script src="search.js" defer></script>
-		<script src="index.js" defer></script>
-	</head>
+        :root {
+            /* --- COLOR CONFIGURATION --- */
+            --accent-color: #00ff41;           
+            --grid-line-color: rgba(255, 255, 255, 0.05); 
+            --bg-dark: #0a0a0a;                
+            --text-main: #ffffff;              
+        }
 
-	<body>
-		<div title="Scramjet Logo" class="flex-center logo-wrapper header-center">
-			<img class="logo" src="sj.png" alt="Scramjet" />
-			<h1>Scramjet | MW</h1>
-		</div>
-		<div class="flex-center desc left-margin">
-			<p>
-				Scramjet is an experimental interception based web proxy designed to
-				evade internet censorship, bypass arbitrary web browser restrictions and
-				innovate web proxy technologies.
-			</p>
-		</div>
+        * { box-sizing: border-box; }
 
-		<form id="sj-form" class="flex-center">
-			<input
-				id="sj-search-engine"
-				value="https://www.google.com/search?q=%s"
-				type="hidden"
-			/>
-			<input id="sj-address" type="text" placeholder="Search the web freely" />
-		</form>
-		<div class="desc left-margin">
-			<p id="sj-error"></p>
-			<pre id="sj-error-code"></pre>
-		</div>
-		<footer>
-			<div>
-				<a
-					title="The Mercury Workshop GitHub organization"
-					href="https://github.com/MercuryWorkshop"
-					>Mercury Workshop</a
-				>
-				<a
-					title="The example demo app for Scramjet"
-					href="https://github.com/MercuryWorkshop/Scramjet-Demo"
-					>GitHub</a
-				>
-				<a title="License information" href="credits.html">Credits</a>
-			</div>
-			<div>
-				<span>Scramjet &copy; MW 2025</span>
-			</div>
-		</footer>
-	</body>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: var(--bg-dark);
+            font-family: "Roboto", sans-serif;
+            color: var(--text-main);
+        }
+
+        /* --- GRID BACKGROUND --- */
+        .grid-bg {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(var(--grid-line-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-line-color) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 1;
+        }
+
+        /* --- TOP NAV BAR --- */
+        .hover-trigger {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            z-index: 10001;
+        }
+
+        .top-nav {
+            position: fixed;
+            top: -70px;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: rgba(10, 10, 10, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10000;
+            border-bottom: 1px solid var(--accent-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .top-nav:hover, .hover-trigger:hover + .top-nav { top: 0; }
+
+        .top-nav input {
+            width: 500px;
+            height: 35px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: white;
+            padding: 0 15px;
+            outline: none;
+        }
+
+        /* --- MAIN UI --- */
+        .centered-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; 
+            height: 100vh;
+            z-index: 10;
+            opacity: 0;
+            animation: mainFadeIn 1s ease forwards 3.8s;
+        }
+
+        @keyframes mainFadeIn { to { opacity: 1; } }
+
+        .logo-wrapper h1 {
+            font-size: 4rem;
+            margin-bottom: 20px; 
+            font-weight: 900;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+        }
+
+        #sj-form { width: 100%; max-width: 600px; padding: 0 20px; }
+
+        #sj-address {
+            width: 100%;
+            height: 65px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            color: #fff;
+            padding: 0 30px;
+            font-size: 1.2rem;
+            outline: none;
+            transition: 0.4s ease;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        }
+
+        #sj-address:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 25px rgba(0, 255, 65, 0.2);
+        }
+
+        /* --- SPLASH ANIMATION --- */
+        .splash-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999999;
+            pointer-events: all;
+            animation: splashExit 1s ease forwards 4s;
+        }
+
+        .splash-text {
+            font-size: 2.2rem;
+            font-weight: 900;
+            text-align: center;
+            opacity: 0;
+            animation: textReveal 3.5s ease forwards 0.5s;
+            line-height: 1.4;
+        }
+
+        .splash-text span { color: var(--accent-color); }
+
+        .splash-link {
+            display: inline-block;
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: var(--accent-color);
+            text-decoration: none;
+            margin-top: 15px;
+            padding: 5px 15px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            transition: 0.3s ease;
+            pointer-events: auto;
+            cursor: pointer;
+            /* Pulsing glow to signal it is clickable */
+            animation: pulseGlow 2s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0% { text-shadow: 0 0 5px var(--accent-color); }
+            50% { text-shadow: 0 0 15px var(--accent-color), 0 0 20px var(--accent-color); color: #fff; }
+            100% { text-shadow: 0 0 5px var(--accent-color); }
+        }
+
+        .splash-link:hover {
+            background: rgba(0, 255, 65, 0.1);
+            border-color: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        @keyframes textReveal {
+            0% { opacity: 0; transform: translateY(15px); }
+            20% { opacity: 1; transform: translateY(0); }
+            85% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @keyframes splashExit {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        /* --- WATERMARK --- */
+        .watermark {
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.3);
+            z-index: 100;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        footer {
+            position: absolute;
+            bottom: 20px;
+            text-align: center;
+            width: 100%;
+            color: rgba(255,255,255,0.2);
+            font-size: 12px;
+        }
+    </style>
+
+    <script src="/scram/scramjet.all.js" defer></script>
+    <script src="/baremux/index.js" defer></script>
+    <script src="register-sw.js" defer></script>
+    <script src="search.js" defer></script>
+    <script src="index.js" defer></script>
+</head>
+<body>
+
+    <div class="splash-overlay">
+        <div class="splash-text">
+            BY <span>NIKEGTAG</span><br>
+            <a href="https://securly.pages.dev/" target="_blank" class="splash-link">
+                best unblοcked games, proxys, and partners.                           -> securly.pages.dev <-
+                                        
+            </a>
+        </div>
+    </div>
+
+    <div class="grid-bg"></div>
+    <div class="hover-trigger"></div>
+    
+    <nav class="top-nav">
+        <form id="top-form">
+            <input id="top-address" type="text" placeholder="Quick Search / Enter URL..." autocomplete="off">
+        </form>
+    </nav>
+
+    <main class="centered-wrapper" id="main-ui">
+        <div class="logo-wrapper">
+            <h1>ProxyMan</h1>
+        </div>
+
+        <form id="sj-form">
+            <input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
+            <input id="sj-address" type="text" placeholder="Search the web freely..." autofocus autocomplete="off" />
+        </form>
+
+        <div class="desc">
+            <p id="sj-error"></p>
+            <pre id="sj-error-code"></pre>
+        </div>
+
+        <footer>
+            Made by <b>NikeGtag</b>, for proxyman &copy; 2026
+        </footer>
+    </main>
+
+    <div class="watermark">NIKEGTAG x PROXYMAN</div>
+
+</body>
 </html>
