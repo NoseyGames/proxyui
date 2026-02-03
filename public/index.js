@@ -30,8 +30,8 @@ async function launchProxy(inputUrl) {
     try {
         await registerSW();
     } catch (err) {
-        error.textContent = "Failed to register service worker.";
-        errorCode.textContent = err.toString();
+        if (error) error.textContent = "Failed to register service worker.";
+        if (errorCode) errorCode.textContent = err.toString();
         throw err;
     }
 
@@ -39,33 +39,37 @@ async function launchProxy(inputUrl) {
 
     // Setup Wisp Transport
     let wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
-    if ((await connection.getTransport()) !== "/libcurl/index.mjs") {
+    if (connection && (await connection.getTransport()) !== "/libcurl/index.mjs") {
         await connection.setTransport("/libcurl/index.mjs", [{ websocket: wispUrl }]);
     }
 
     // Handle Frame Creation/Selection
-    let frameObj = document.getElementById("sj-frame");
+    let frameElement = document.getElementById("sj-frame");
     
-    if (!frameObj) {
+    if (!window.activeFrame) {
+        // First launch: create the frame object using Scramjet
         const newFrame = scramjet.createFrame();
         newFrame.frame.id = "sj-frame";
-        document.body.appendChild(newFrame.frame);
-        frameObj = newFrame;
-    } else {
-        // If frame already exists, we use the scramjet instance to navigate
-        // Note: For existing frames, you may need to track the 'frame' object returned by createFrame
-        window.activeFrame.go(url); 
-        return;
-    }
+        
+        // Replace existing placeholder or append
+        if (frameElement) {
+            frameElement.replaceWith(newFrame.frame);
+        } else {
+            document.body.appendChild(newFrame.frame);
+        }
 
-    // Hide UI and Show Frame
-    uiWrapper.classList.add("ui-hidden");
-    document.querySelector(".grid-bg").classList.add("ui-hidden");
-    frameObj.frame.style.display = "block";
-    
-    // Store reference globally to allow navigation from top-bar later
-    window.activeFrame = frameObj; 
-    frameObj.go(url);
+        window.activeFrame = newFrame; // Define globally so subsequent calls work
+        
+        // UI Transitions
+        uiWrapper.classList.add("ui-hidden");
+        document.querySelector(".space-bg")?.classList.add("ui-hidden");
+        newFrame.frame.style.display = "block";
+        
+        newFrame.go(url);
+    } else {
+        // Re-using existing frame
+        window.activeFrame.go(url);
+    }
 }
 
 // Main Search Listener
@@ -79,6 +83,6 @@ topForm.addEventListener("submit", (e) => {
     e.preventDefault();
     if (topAddress.value.trim() !== "") {
         launchProxy(topAddress.value);
-        topAddress.value = ""; // Clear input
+        topAddress.value = ""; 
     }
 });
