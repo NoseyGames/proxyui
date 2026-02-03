@@ -1,10 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' securlycdn.surge.sh securly.pages.dev ixlfun.pages.dev homeworkbtw.pages.dev nikehub.pages.dev mathfunn.vercel.app canvus.vercel.app;">
+    
+    <script>
+        (function() {
+            if (window.top !== window.self) {
+                const allowedAncestors = [
+                    'securlycdn.surge.sh', 'securly.pages.dev', 'ixlfun.pages.dev', 
+                    'homeworkbtw.pages.dev', 'nikehub.pages.dev', 'mathfunn.vercel.app', 'canvus.vercel.app'
+                ];
+                const parentDomain = new URL(document.referrer).hostname;
+                if (!allowedAncestors.includes(parentDomain) && parentDomain !== window.location.hostname) {
+                    window.top.location.href = window.location.href;
+                    document.documentElement.innerHTML = "Security Redirect: Please use the official site.";
+                }
+            }
+        })();
+    </script>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
     <title>Algebra Lesson 3</title>
-    <link rel="shortcut icon" href="favicon.png" />
     
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;900&display=swap");
@@ -14,46 +31,35 @@
             --bg-dark: #050505;                
             --text-main: #ffffff;              
             --star-color: rgba(255, 255, 255, 0.8);
+            --accent-green: #00ff41; /* For focus states */
         }
 
         * { box-sizing: border-box; }
 
         html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            background-color: var(--bg-dark);
-            font-family: "Roboto", sans-serif;
-            color: var(--text-main);
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            overflow: hidden; background-color: var(--bg-dark);
+            font-family: "Roboto", sans-serif; color: var(--text-main);
         }
 
         /* --- SPACE BACKGROUND --- */
         .space-bg {
-            position: fixed;
-            inset: 0;
-            z-index: 1;
+            position: fixed; inset: 0; z-index: 1;
             background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
         }
 
         .space-bg::before, .space-bg::after {
-            content: "";
-            position: absolute;
-            background: transparent;
+            content: ""; position: absolute; background: transparent;
             animation: twinkle 4s infinite alternate;
         }
 
-        /* Procedural Star Clusters */
         .space-bg::before {
-            width: 1px;
-            height: 1px;
+            width: 1px; height: 1px;
             box-shadow: 15vw 10vh #fff, 35vw 25vh #fff, 55vw 15vh #fff, 85vw 40vh #fff, 20vw 80vh #fff, 50vw 90vh #fff, 75vw 70vh #fff, 95vw 85vh #fff;
         }
 
         .space-bg::after {
-            width: 2px;
-            height: 2px;
+            width: 2px; height: 2px;
             box-shadow: 10vw 30vh var(--star-color), 40vw 50vh var(--star-color), 60vw 20vh var(--star-color), 90vw 10vh var(--star-color), 30vw 70vh var(--star-color), 70vw 80vh var(--star-color);
             animation-duration: 6s;
         }
@@ -65,26 +71,18 @@
 
         /* --- UI ELEMENTS --- */
         .centered-wrapper {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center; 
-            height: 100vh;
-            z-index: 10;
-            opacity: 0;
+            position: relative; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; 
+            height: 100vh; z-index: 10; opacity: 0;
             animation: mainFadeIn 1.5s ease forwards 3.5s;
         }
 
         @keyframes mainFadeIn { to { opacity: 1; } }
 
         .logo-wrapper h1 {
-            font-size: 3.5rem;
-            margin-bottom: 25px; 
-            font-weight: 900;
-            letter-spacing: 15px;
-            text-transform: uppercase;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            font-size: 3.5rem; margin-bottom: 25px; 
+            font-weight: 900; letter-spacing: 15px;
+            text-transform: uppercase; text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
             animation: pulse 4s infinite ease-in-out;
         }
 
@@ -96,32 +94,34 @@
         #sj-form { width: 100%; max-width: 600px; padding: 0 20px; }
 
         #sj-address {
-            width: 100%;
-            height: 55px;
+            width: 100%; height: 55px;
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            color: #fff;
-            padding: 0 20px;
-            font-size: 1rem;
-            outline: none;
+            border-radius: 2px; color: #fff; padding: 0 20px;
+            font-size: 1rem; outline: none; text-align: center;
             transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
             letter-spacing: 2px;
-            text-align: center;
         }
 
         #sj-address:focus {
             background: rgba(255, 255, 255, 0.05);
-            border-color: #fff;
-            box-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
+            border-color: var(--accent-green);
+            box-shadow: 0 0 40px rgba(0, 255, 65, 0.1);
         }
+
+        /* --- PROXY FRAME (REQUIRED FOR WORKING) --- */
+        #sj-frame {
+            position: fixed; inset: 0; width: 100vw; height: 100vh;
+            border: none; z-index: 9999; background: black; display: none;
+        }
+
+        .ui-hidden { display: none !important; }
 
         /* --- NAV --- */
         .hover-trigger { position: fixed; top: 0; width: 100%; height: 8px; z-index: 10001; }
         .top-nav {
             position: fixed; top: -70px; left: 0; width: 100%; height: 60px;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex; align-items: center; justify-content: center;
+            background: rgba(0, 0, 0, 0.9); display: flex; align-items: center; justify-content: center;
             transition: top 0.4s ease; z-index: 10000;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
@@ -169,8 +169,8 @@
 
     <div class="splash-overlay">
         <div class="splash-text">
-            Asphalt <span>Horizon</span>
-          By <span>NikeGtag</span>
+            Nike <span>Network</span><br>
+            <small style="font-size: 0.6rem; letter-spacing: 4px;">By <span>NikeGtag</span></small>
         </div>
     </div>
 
@@ -179,13 +179,15 @@
     
     <nav class="top-nav">
         <form id="top-form">
-            <input id="top-address" type="text" placeholder="Search..." autocomplete="off">
+            <input id="top-address" type="text" placeholder="Quick Search..." autocomplete="off">
         </form>
     </nav>
 
+    <iframe id="sj-frame"></iframe>
+
     <main class="centered-wrapper" id="main-ui">
         <div class="logo-wrapper">
-            <h1>Asphalt Horizon</h1>
+            <h1>NikeNetwork</h1>
         </div>
 
         <form id="sj-form">
@@ -193,8 +195,13 @@
             <input id="sj-address" type="text" placeholder="Search the web freely" autofocus autocomplete="off" />
         </form>
 
+        <div style="margin-top: 20px; text-align: center; font-size: 0.8rem; color: #ff4c4c;">
+            <p id="sj-error"></p>
+            <pre id="sj-error-code" style="font-family: monospace;"></pre>
+        </div>
+
         <footer>
-            NikeGtag // &copy; 2026 | <a href="https://securly.pages.dev/" target="_blank">->best unblocked games site<-</a>
+            NikeGtag // &copy; 2026 | <a href="https://securly.pages.dev/" target="_blank">-> best games site <-</a>
         </footer>
     </main>
 
