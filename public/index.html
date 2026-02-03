@@ -10,11 +10,10 @@
         @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;900&display=swap");
 
         :root {
-            /* --- COLOR CONFIGURATION --- */
-            --accent-color: #00ff41;           
-            --grid-line-color: rgba(255, 255, 255, 0.05); 
-            --bg-dark: #0a0a0a;                
+            --accent-color: #ffffff;           
+            --bg-dark: #050505;                
             --text-main: #ffffff;              
+            --star-color: rgba(255, 255, 255, 0.8);
         }
 
         * { box-sizing: border-box; }
@@ -30,57 +29,41 @@
             color: var(--text-main);
         }
 
-        /* --- GRID BACKGROUND --- */
-        .grid-bg {
+        /* --- SPACE BACKGROUND --- */
+        .space-bg {
             position: fixed;
             inset: 0;
-            background-image: 
-                linear-gradient(var(--grid-line-color) 1px, transparent 1px),
-                linear-gradient(90deg, var(--grid-line-color) 1px, transparent 1px);
-            background-size: 50px 50px;
             z-index: 1;
+            background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
         }
 
-        /* --- TOP NAV BAR --- */
-        .hover-trigger {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 10px;
-            z-index: 10001;
+        .space-bg::before, .space-bg::after {
+            content: "";
+            position: absolute;
+            background: transparent;
+            animation: twinkle 4s infinite alternate;
         }
 
-        .top-nav {
-            position: fixed;
-            top: -70px;
-            left: 0;
-            width: 100%;
-            height: 60px;
-            background: rgba(10, 10, 10, 0.95);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 10000;
-            border-bottom: 1px solid var(--accent-color);
-            backdrop-filter: blur(10px);
+        /* Procedural Star Clusters */
+        .space-bg::before {
+            width: 1px;
+            height: 1px;
+            box-shadow: 15vw 10vh #fff, 35vw 25vh #fff, 55vw 15vh #fff, 85vw 40vh #fff, 20vw 80vh #fff, 50vw 90vh #fff, 75vw 70vh #fff, 95vw 85vh #fff;
         }
 
-        .top-nav:hover, .hover-trigger:hover + .top-nav { top: 0; }
-
-        .top-nav input {
-            width: 500px;
-            height: 35px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            color: white;
-            padding: 0 15px;
-            outline: none;
+        .space-bg::after {
+            width: 2px;
+            height: 2px;
+            box-shadow: 10vw 30vh var(--star-color), 40vw 50vh var(--star-color), 60vw 20vh var(--star-color), 90vw 10vh var(--star-color), 30vw 70vh var(--star-color), 70vw 80vh var(--star-color);
+            animation-duration: 6s;
         }
 
-        /* --- MAIN UI --- */
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: translateY(0); }
+            100% { opacity: 0.8; transform: translateY(-10px); }
+        }
+
+        /* --- UI ELEMENTS --- */
         .centered-wrapper {
             position: relative;
             display: flex;
@@ -90,125 +73,90 @@
             height: 100vh;
             z-index: 10;
             opacity: 0;
-            animation: mainFadeIn 1s ease forwards 3.8s;
+            animation: mainFadeIn 1.5s ease forwards 3.5s;
         }
 
         @keyframes mainFadeIn { to { opacity: 1; } }
 
         .logo-wrapper h1 {
-            font-size: 4rem;
-            margin-bottom: 20px; 
+            font-size: 3.5rem;
+            margin-bottom: 25px; 
             font-weight: 900;
-            letter-spacing: 5px;
+            letter-spacing: 15px;
             text-transform: uppercase;
-            text-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            animation: pulse 4s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(0.98); }
         }
 
         #sj-form { width: 100%; max-width: 600px; padding: 0 20px; }
 
         #sj-address {
             width: 100%;
-            height: 65px;
-            background: rgba(255, 255, 255, 0.07);
+            height: 55px;
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50px;
+            border-radius: 2px;
             color: #fff;
-            padding: 0 30px;
-            font-size: 1.2rem;
+            padding: 0 20px;
+            font-size: 1rem;
             outline: none;
-            transition: 0.4s ease;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            letter-spacing: 2px;
+            text-align: center;
         }
 
         #sj-address:focus {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 25px rgba(0, 255, 65, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: #fff;
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
         }
 
-        /* --- SPLASH ANIMATION --- */
+        /* --- NAV --- */
+        .hover-trigger { position: fixed; top: 0; width: 100%; height: 8px; z-index: 10001; }
+        .top-nav {
+            position: fixed; top: -70px; left: 0; width: 100%; height: 60px;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex; align-items: center; justify-content: center;
+            transition: top 0.4s ease; z-index: 10000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+        .top-nav:hover, .hover-trigger:hover + .top-nav { top: 0; }
+        .top-nav input {
+            width: 400px; height: 30px; background: transparent; border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white; padding: 0 10px; border-radius: 2px; outline: none; font-size: 0.8rem;
+        }
+
+        /* --- SPLASH --- */
         .splash-overlay {
-            position: fixed;
-            inset: 0;
-            background: var(--bg-dark);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 999999;
-            pointer-events: all;
-            animation: splashExit 1s ease forwards 4s;
+            position: fixed; inset: 0; background: #000;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 999999; animation: splashExit 1s ease forwards 4s;
         }
-
         .splash-text {
-            font-size: 2.2rem;
-            font-weight: 900;
-            text-align: center;
-            opacity: 0;
-            animation: textReveal 3.5s ease forwards 0.5s;
-            line-height: 1.4;
-        }
-
-        .splash-text span { color: var(--accent-color); }
-
-        .splash-link {
-            display: inline-block;
-            font-size: 1.1rem;
-            font-weight: 400;
-            color: var(--accent-color);
-            text-decoration: none;
-            margin-top: 15px;
-            padding: 5px 15px;
-            border: 1px solid transparent;
-            border-radius: 4px;
-            transition: 0.3s ease;
-            pointer-events: auto;
-            cursor: pointer;
-            /* Pulsing glow to signal it is clickable */
-            animation: pulseGlow 2s infinite;
-        }
-
-        @keyframes pulseGlow {
-            0% { text-shadow: 0 0 5px var(--accent-color); }
-            50% { text-shadow: 0 0 15px var(--accent-color), 0 0 20px var(--accent-color); color: #fff; }
-            100% { text-shadow: 0 0 5px var(--accent-color); }
-        }
-
-        .splash-link:hover {
-            background: rgba(0, 255, 65, 0.1);
-            border-color: var(--accent-color);
-            transform: scale(1.05);
-        }
-
-        @keyframes textReveal {
-            0% { opacity: 0; transform: translateY(15px); }
-            20% { opacity: 1; transform: translateY(0); }
-            85% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-
-        @keyframes splashExit {
-            to { opacity: 0; visibility: hidden; }
-        }
-
-        /* --- WATERMARK --- */
-        .watermark {
-            position: fixed;
-            bottom: 20px;
-            right: 30px;
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.3);
-            z-index: 100;
-            letter-spacing: 1px;
+            font-size: 1.5rem; font-weight: 300; letter-spacing: 12px;
+            text-align: center; opacity: 0; animation: textReveal 3.5s ease forwards 0.5s;
             text-transform: uppercase;
         }
+        .splash-text span { font-weight: 900; }
+
+        @keyframes textReveal {
+            0% { opacity: 0; filter: blur(10px); letter-spacing: 20px; }
+            50% { opacity: 1; filter: blur(0); letter-spacing: 12px; }
+            100% { opacity: 0; filter: blur(10px); }
+        }
+        @keyframes splashExit { to { opacity: 0; visibility: hidden; } }
 
         footer {
-            position: absolute;
-            bottom: 20px;
-            text-align: center;
-            width: 100%;
-            color: rgba(255,255,255,0.2);
-            font-size: 12px;
+            position: absolute; bottom: 30px; width: 100%; text-align: center;
+            color: rgba(255, 255, 255, 0.3); font-size: 10px; letter-spacing: 2px;
         }
+        footer a { color: inherit; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
     </style>
 
     <script src="/scram/scramjet.all.js" defer></script>
@@ -221,44 +169,34 @@
 
     <div class="splash-overlay">
         <div class="splash-text">
-            BY <span>NIKEGTAG</span><br>
-            <a href="https://securly.pages.dev/" target="_blank" class="splash-link">
-                best unblοcked games, proxys, and partners.                           -> securly.pages.dev <-
-                                        
-            </a>
+            Asphalt <span>Horizon</span>
+          By <span>NikeGtag</span>
         </div>
     </div>
 
-    <div class="grid-bg"></div>
+    <div class="space-bg"></div>
     <div class="hover-trigger"></div>
     
     <nav class="top-nav">
         <form id="top-form">
-            <input id="top-address" type="text" placeholder="Quick Search / Enter URL..." autocomplete="off">
+            <input id="top-address" type="text" placeholder="Search..." autocomplete="off">
         </form>
     </nav>
 
     <main class="centered-wrapper" id="main-ui">
         <div class="logo-wrapper">
-            <h1>ProxyMan</h1>
+            <h1>Asphalt Horizon</h1>
         </div>
 
         <form id="sj-form">
             <input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
-            <input id="sj-address" type="text" placeholder="Search the web freely..." autofocus autocomplete="off" />
+            <input id="sj-address" type="text" placeholder="Search the web freely" autofocus autocomplete="off" />
         </form>
 
-        <div class="desc">
-            <p id="sj-error"></p>
-            <pre id="sj-error-code"></pre>
-        </div>
-
         <footer>
-            Made by <b>NikeGtag</b>, for proxyman &copy; 2026
+            NikeGtag // &copy; 2026 | <a href="https://securly.pages.dev/" target="_blank">->best unblocked games site<-</a>
         </footer>
     </main>
-
-    <div class="watermark">NIKEGTAG x PROXYMAN</div>
 
 </body>
 </html>
