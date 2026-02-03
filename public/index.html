@@ -119,9 +119,16 @@
             font-weight: 300;
         }
 
-        #sj-address:focus {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(255, 255, 255, 0.4);
+        /* --- PROXY FRAME STYLING --- */
+        #sj-frame {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            border: none;
+            z-index: 9999999;
+            background: #000;
+            display: none;
         }
 
         footer {
@@ -134,15 +141,13 @@
         }
 
         footer a { color: white; text-decoration: none; margin-left: 15px; opacity: 0.5; }
-        footer a:hover { opacity: 1; }
     </style>
 
     <script src="/scram/scramjet.all.js" defer></script>
     <script src="/baremux/index.js" defer></script>
     <script src="register-sw.js" defer></script>
     <script src="search.js" defer></script>
-    <script src="index.js" defer></script>
-</head>
+    </head>
 <body>
 
     <div class="splash-overlay"></div>
@@ -170,55 +175,84 @@
     </main>
 
     <script>
+        // --- Constellation Effect ---
         const canvas = document.getElementById('constellation-canvas');
         const ctx = canvas.getContext('2d');
         let points = [];
         const maxDist = 150;
-
-        function init() {
+        function initC() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             points = [];
             for (let i = 0; i < 80; i++) {
-                points.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    vx: (Math.random() - 0.5) * 0.3,
-                    vy: (Math.random() - 0.5) * 0.3
-                });
+                points.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx: (Math.random()-0.5)*0.3, vy: (Math.random()-0.5)*0.3});
             }
         }
-
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#fff';
-            for (let i = 0; i < points.length; i++) {
-                let p = points[i];
+        function drawC() {
+            ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle = '#fff';
+            points.forEach((p, i) => {
                 p.x += p.vx; p.y += p.vy;
-                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, 1, 0, Math.PI * 2);
-                ctx.fill();
-                for (let j = i + 1; j < points.length; j++) {
-                    let p2 = points[j];
-                    let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-                    if (dist < maxDist) {
-                        ctx.beginPath();
-                        ctx.moveTo(p.x, p.y);
-                        ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `rgba(255, 255, 255, ${1 - dist/maxDist})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.stroke();
+                if(p.x<0||p.x>canvas.width) p.vx*=-1; if(p.y<0||p.y>canvas.height) p.vy*=-1;
+                ctx.beginPath(); ctx.arc(p.x,p.y,1,0,Math.PI*2); ctx.fill();
+                for(let j=i+1; j<points.length; j++){
+                    let p2=points[j]; let d=Math.hypot(p.x-p2.x, p.y-p2.y);
+                    if(d<maxDist){
+                        ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p2.x,p2.y);
+                        ctx.strokeStyle=`rgba(255,255,255,${1-d/maxDist})`; ctx.lineWidth=0.5; ctx.stroke();
                     }
                 }
-            }
-            requestAnimationFrame(draw);
+            });
+            requestAnimationFrame(drawC);
         }
-        window.addEventListener('resize', init);
-        init();
-        draw();
-    </script>
+        window.addEventListener('resize', initC); initC(); drawC();
 
+        // --- Proxy Logic ---
+        window.addEventListener('load', () => {
+            const form = document.getElementById("sj-form");
+            const address = document.getElementById("sj-address");
+            const uiWrapper = document.getElementById("main-ui");
+
+            const { ScramjetController } = $scramjetLoadController();
+            const scramjet = new ScramjetController({
+                files: { wasm: "/scram/scramjet.wasm.wasm", all: "/scram/scramjet.all.js", sync: "/scram/scramjet.sync.js" },
+            });
+            scramjet.init();
+
+            const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
+
+            async function launchProxy(input) {
+                try { await registerSW(); } catch(e) {}
+                
+                // Using the search function from your search.js
+                const url = search(input, document.getElementById("sj-search-engine").value);
+                
+                let wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
+                if (connection && (await connection.getTransport()) !== "/libcurl/index.mjs") {
+                    await connection.setTransport("/libcurl/index.mjs", [{ websocket: wispUrl }]);
+                }
+
+                if (!window.activeFrame) {
+                    const newFrame = scramjet.createFrame();
+                    newFrame.frame.id = "sj-frame";
+                    document.body.appendChild(newFrame.frame);
+                    window.activeFrame = newFrame;
+                    
+                    // Hide UI so the frame is visible
+                    uiWrapper.style.display = "none";
+                    canvas.style.display = "none";
+                    newFrame.frame.style.display = "block";
+                    
+                    newFrame.go(url);
+                } else {
+                    window.activeFrame.go(url);
+                }
+            }
+
+            form.addEventListener("submit", (e) => {
+                e.preventDefault();
+                launchProxy(address.value);
+            });
+        });
+    </script>
 </body>
 </html>
