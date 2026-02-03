@@ -4,7 +4,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
     <title>Asphalt Horizon</title>
-    <link rel="shortcut icon" href="favicon.png" />
     
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;700;900&display=swap");
@@ -14,245 +13,259 @@
             --text-white: #ffffff;
             --gray-dim: #222222;
             --gray-med: #666666;
+            --glass: rgba(15, 15, 15, 0.95);
+            --border: rgba(255, 255, 255, 0.1);
         }
 
         * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; background-color: var(--bg-black); font-family: "Inter", sans-serif; color: var(--text-white); }
 
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            background-color: var(--bg-black);
-            font-family: "Inter", sans-serif;
-            color: var(--text-white);
-        }
-
-        /* --- BLACK SCREEN OVERLAY --- */
-        .splash-overlay {
+        /* --- GLOBAL NAVIGATION BAR --- */
+        #nav-container {
             position: fixed;
-            inset: 0;
-            background: black;
-            z-index: 999998;
-            animation: curtainFade 4.5s ease-in-out both;
-            pointer-events: none;
-        }
-
-        @keyframes curtainFade {
-            0% { opacity: 1; visibility: visible; }
-            85% { opacity: 1; }
-            100% { opacity: 0; visibility: hidden; }
-        }
-
-        /* --- CONSTELLATION CANVAS --- */
-        #constellation-canvas {
-            position: fixed;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            opacity: 0.5;
-        }
-
-        /* --- INTRO TEXT --- */
-        body::before {
-            content: "ASPHALT HORIZON";
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2.5rem;
-            font-weight: 900;
-            letter-spacing: 15px;
-            color: white;
-            z-index: 999999;
-            pointer-events: none;
-            animation: cinematicIntro 4s cubic-bezier(0.2, 0, 0.2, 1) forwards;
-        }
-
-        @keyframes cinematicIntro {
-            0% { opacity: 0; letter-spacing: 30px; filter: blur(10px); }
-            20% { opacity: 1; filter: blur(0px); }
-            80% { opacity: 1; letter-spacing: 15px; }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.05); visibility: hidden; }
-        }
-
-        /* --- MAIN UI --- */
-        .centered-wrapper {
-            position: relative;
+            top: 0; left: 0; right: 0;
+            z-index: 10000000;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
             display: flex;
             flex-direction: column;
+        }
+
+        .nav-controls {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            gap: 8px;
+        }
+
+        .tab-bar {
+            height: 35px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 5px;
+            background: rgba(0,0,0,0.4);
+            overflow-x: auto;
+        }
+
+        /* --- SVG BUTTONS --- */
+        .nav-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: white;
+            padding: 6px;
+            cursor: pointer;
+            display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            z-index: 10;
+            border-radius: 6px;
+            transition: 0.2s;
         }
+        .nav-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--border); }
+        .nav-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-        .logo-wrapper h1 {
-            font-size: 5rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            margin-bottom: 40px;
-            letter-spacing: -2px;
-        }
-
-        .logo-wrapper h1 span {
-            font-weight: 100;
-            color: var(--gray-med);
-            letter-spacing: 5px;
-            margin-left: 10px;
-        }
-
-        #sj-form { width: 100%; max-width: 580px; padding: 0 20px; }
-
-        #sj-address {
-            width: 100%;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        #nav-url {
+            flex-grow: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
             color: white;
-            padding: 0 30px;
-            font-size: 1.1rem;
+            padding: 8px 15px;
+            font-size: 0.85rem;
+            border-radius: 6px;
             outline: none;
-            text-align: center;
-            font-weight: 300;
+            margin: 0 5px;
         }
 
-        /* --- PROXY FRAME STYLING --- */
-        #sj-frame {
+        /* --- TAB STYLING --- */
+        .tab {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            color: var(--gray-med);
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            border-radius: 4px;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+        .tab.active { background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.3); }
+        .tab-close { opacity: 0.4; font-size: 14px; }
+        .tab-close:hover { color: #ff4d4d; opacity: 1; }
+
+        /* --- PROXY FRAMES --- */
+        .proxy-frame {
             position: fixed;
-            inset: 0;
+            top: 85px; 
+            left: 0;
             width: 100vw;
-            height: 100vh;
+            height: calc(100vh - 85px);
             border: none;
-            z-index: 9999999;
             background: #000;
             display: none;
+            z-index: 50;
         }
+        .proxy-frame.active { display: block; }
 
-        footer {
-            position: absolute;
-            bottom: 40px;
-            color: var(--gray-med);
-            font-size: 0.75rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
+        /* --- MAIN UI --- */
+        .centered-wrapper { 
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            z-index: 10;
         }
+        .logo-wrapper h1 { font-size: 4rem; font-weight: 900; letter-spacing: -2px; margin-bottom: 20px; text-transform: uppercase; }
+        .logo-wrapper h1 span { font-weight: 100; color: var(--gray-med); margin-left: 10px; letter-spacing: 5px;}
 
-        footer a { color: white; text-decoration: none; margin-left: 15px; opacity: 0.5; }
+        #constellation-canvas { position: fixed; inset: 0; z-index: 1; opacity: 0.4; pointer-events: none; }
     </style>
 
     <script src="/scram/scramjet.all.js" defer></script>
     <script src="/baremux/index.js" defer></script>
     <script src="register-sw.js" defer></script>
     <script src="search.js" defer></script>
-    </head>
+</head>
 <body>
 
-    <div class="splash-overlay"></div>
     <canvas id="constellation-canvas"></canvas>
+
+    <div id="nav-container">
+        <div class="nav-controls">
+            <button class="nav-btn" onclick="controlFrame('back')" title="Back">
+                <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button class="nav-btn" onclick="controlFrame('forward')" title="Forward">
+                <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+            <button class="nav-btn" onclick="controlFrame('reload')" title="Reload">
+                <svg viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+            </button>
+            
+            <input type="text" id="nav-url" placeholder="Search or enter URL" autocomplete="off">
+            
+            <button class="nav-btn" onclick="addTab()" title="New Tab">
+                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+            <button class="nav-btn" onclick="location.reload()" title="Home">
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </button>
+        </div>
+        <div class="tab-bar" id="tab-bar"></div>
+    </div>
 
     <main class="centered-wrapper" id="main-ui">
         <div class="logo-wrapper">
             <h1>Asphalt<span>Horizon</span></h1>
         </div>
-
-        <form id="sj-form">
+        <form id="sj-form" style="width:100%; max-width:580px;">
             <input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
-            <input id="sj-address" type="text" placeholder="Explore the horizon" autofocus autocomplete="off" />
+            <input id="sj-address" type="text" placeholder="explore the horizon..." style="width:100%; height:60px; background:rgba(255,255,255,0.03); border:1px solid var(--border); color:white; padding:0 30px; text-align:center; outline:none; border-radius:8px;" autofocus autocomplete="off" />
         </form>
-
-        <div class="desc">
-            <p id="sj-error"></p>
-            <pre id="sj-error-code"></pre>
-        </div>
-
-        <footer>
-            Horizon Network &copy; 2026 
-            <a href="https://securly.pages.dev">Games</a>
-        </footer>
     </main>
 
     <script>
-        // --- Constellation Effect ---
-        const canvas = document.getElementById('constellation-canvas');
-        const ctx = canvas.getContext('2d');
-        let points = [];
-        const maxDist = 150;
-        function initC() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            points = [];
-            for (let i = 0; i < 80; i++) {
-                points.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx: (Math.random()-0.5)*0.3, vy: (Math.random()-0.5)*0.3});
-            }
-        }
-        function drawC() {
-            ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle = '#fff';
-            points.forEach((p, i) => {
-                p.x += p.vx; p.y += p.vy;
-                if(p.x<0||p.x>canvas.width) p.vx*=-1; if(p.y<0||p.y>canvas.height) p.vy*=-1;
-                ctx.beginPath(); ctx.arc(p.x,p.y,1,0,Math.PI*2); ctx.fill();
-                for(let j=i+1; j<points.length; j++){
-                    let p2=points[j]; let d=Math.hypot(p.x-p2.x, p.y-p2.y);
-                    if(d<maxDist){
-                        ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p2.x,p2.y);
-                        ctx.strokeStyle=`rgba(255,255,255,${1-d/maxDist})`; ctx.lineWidth=0.5; ctx.stroke();
-                    }
-                }
-            });
-            requestAnimationFrame(drawC);
-        }
-        window.addEventListener('resize', initC); initC(); drawC();
+        let tabs = [];
+        let activeTabId = null;
+        let scramjet;
 
-        // --- Proxy Logic ---
         window.addEventListener('load', () => {
-            const form = document.getElementById("sj-form");
-            const address = document.getElementById("sj-address");
-            const uiWrapper = document.getElementById("main-ui");
-
             const { ScramjetController } = $scramjetLoadController();
-            const scramjet = new ScramjetController({
-                files: { wasm: "/scram/scramjet.wasm.wasm", all: "/scram/scramjet.all.js", sync: "/scram/scramjet.sync.js" },
-            });
+            scramjet = new ScramjetController({ files: { wasm: "/scram/scramjet.wasm.wasm", all: "/scram/scramjet.all.js", sync: "/scram/scramjet.sync.js" } });
             scramjet.init();
 
-            const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
-
-            async function launchProxy(input) {
-                try { await registerSW(); } catch(e) {}
-                
-                // Using the search function from your search.js
-                const url = search(input, document.getElementById("sj-search-engine").value);
-                
-                let wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
-                if (connection && (await connection.getTransport()) !== "/libcurl/index.mjs") {
-                    await connection.setTransport("/libcurl/index.mjs", [{ websocket: wispUrl }]);
-                }
-
-                if (!window.activeFrame) {
-                    const newFrame = scramjet.createFrame();
-                    newFrame.frame.id = "sj-frame";
-                    document.body.appendChild(newFrame.frame);
-                    window.activeFrame = newFrame;
-                    
-                    // Hide UI so the frame is visible
-                    uiWrapper.style.display = "none";
-                    canvas.style.display = "none";
-                    newFrame.frame.style.display = "block";
-                    
-                    newFrame.go(url);
-                } else {
-                    window.activeFrame.go(url);
-                }
-            }
-
-            form.addEventListener("submit", (e) => {
+            document.getElementById("sj-form").addEventListener("submit", (e) => {
                 e.preventDefault();
-                launchProxy(address.value);
+                const val = document.getElementById("sj-address").value;
+                if(val) createNewProxyTab(val);
+            });
+
+            document.getElementById("nav-url").addEventListener("keydown", (e) => {
+                if(e.key === "Enter") createNewProxyTab(e.target.value);
             });
         });
+
+        function createNewProxyTab(input) {
+            const id = 'tab-' + Date.now();
+            const url = search(input, "https://www.google.com/search?q=%s");
+            
+            const newFrame = scramjet.createFrame();
+            newFrame.frame.classList.add('proxy-frame');
+            newFrame.frame.id = 'frame-' + id;
+            document.body.appendChild(newFrame.frame);
+
+            const tabObj = { id, url, frame: newFrame };
+            tabs.push(tabObj);
+            
+            renderTabs();
+            switchTab(id);
+            newFrame.go(url);
+            
+            document.getElementById("main-ui").style.display = "none";
+        }
+
+        function renderTabs() {
+            const bar = document.getElementById("tab-bar");
+            bar.innerHTML = "";
+            tabs.forEach(t => {
+                const div = document.createElement("div");
+                div.className = `tab ${t.id === activeTabId ? 'active' : ''}`;
+                div.innerHTML = `<span>Page</span> <span class="tab-close" onclick="closeTab(event, '${t.id}')">×</span>`;
+                div.onclick = () => switchTab(t.id);
+                bar.appendChild(div);
+            });
+        }
+
+        function switchTab(id) {
+            activeTabId = id;
+            document.querySelectorAll('.proxy-frame').forEach(f => f.classList.remove('active'));
+            const activeTab = tabs.find(t => t.id === id);
+            if(activeTab) {
+                document.getElementById('frame-' + id).classList.add('active');
+                document.getElementById("nav-url").value = activeTab.url;
+            }
+            renderTabs();
+        }
+
+        function closeTab(e, id) {
+            e.stopPropagation();
+            tabs = tabs.filter(t => t.id !== id);
+            document.getElementById('frame-' + id).remove();
+            if(tabs.length === 0) {
+                document.getElementById("main-ui").style.display = "flex";
+                activeTabId = null;
+            } else if(activeTabId === id) {
+                switchTab(tabs[tabs.length - 1].id);
+            }
+            renderTabs();
+        }
+
+        function controlFrame(action) {
+            const current = tabs.find(t => t.id === activeTabId);
+            if(!current) return;
+            if(action === 'back') current.frame.goBack();
+            if(action === 'forward') current.frame.goForward();
+            if(action === 'reload') current.frame.reload();
+        }
+
+        function addTab() {
+            document.getElementById("main-ui").style.display = "flex";
+            document.getElementById("sj-address").focus();
+        }
+
+        // --- Constellation background ---
+        const canvas = document.getElementById('constellation-canvas');
+        const ctx = canvas.getContext('2d');
+        let pts = [];
+        function initC() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; pts = []; for(let i=0; i<60; i++) pts.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, vx:(Math.random()-0.5)*0.2, vy:(Math.random()-0.5)*0.2}); }
+        function drawC() { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle="#fff"; pts.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; if(p.x<0||p.x>canvas.width) p.vx*=-1; if(p.y<0||p.y>canvas.height) p.vy*=-1; ctx.beginPath(); ctx.arc(p.x,p.y,1,0,Math.PI*2); ctx.fill(); }); requestAnimationFrame(drawC); }
+        window.addEventListener('resize', initC); initC(); drawC();
     </script>
 </body>
 </html>
